@@ -14,6 +14,7 @@ const User = require('./models/Users');
 const ss = require('./middlewares/MediaSoup.js')
 const userRoute = require('./routes/user');
 const testRoute = require('./routes/test');
+const forumRoute = require('./routes/forum');
 const {OAuth2Client} = require('google-auth-library');
 // const {redisClient} = require('./redisClient');
 const app = express();
@@ -92,7 +93,7 @@ app.use((req,res,next)=>{
   }
 })
 
-
+app.use('/forum',forumRoute);
 app.use('/test',testRoute);
 app.use(authRoute);
 app.use('/user/',userRoute);
@@ -148,5 +149,5 @@ mongoose.connect(process.env.DBURI,{dbName:'technic'})
     }
     );
 }).catch(err=>{
-  console.err("Error connecting To DB!",err);
+  console.error("Error connecting To DB!",err);
 })  

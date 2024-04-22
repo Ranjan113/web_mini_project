@@ -21,7 +21,7 @@
     "express-session": "^1.17.3",
     "google-auth-library": "^9.6.0",
     "jsonwebtoken": "^9.0.2",
-    "mediasoup": "^3.13.16",
+    "mediasoup": "^3.14.1",
     "mongoose": "^8.0.4",
     "nodemon": "^3.0.2",
     "pg": "^8.11.3",
