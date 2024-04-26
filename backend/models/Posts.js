@@ -67,4 +67,34 @@ postSchema.virtual('user_data',{
   justOne:true
 })
 
+postSchema.statics.getAllPosts = async function(){
+  try{
+  const posts = await this.find({});
+  // console.log('posts: ',posts);
+  const populatedPost = await Promise.all(
+    posts.map(async post=>{
+    // console.log('post from model map: ',post);
+    const userData =await post.populate('user_data');
+    // console.log('userData after populating: ',userData);
+    const payload = {
+      postId:post._id,
+      userId:post.userData.userId,
+      userData:userData.userData,
+      data:{
+        title : post.data.title,
+        description : post.data.description,
+        attachment : post.data.attachment
+      },
+      metaData:post.metaData
+    };
+    // console.log("post payload: ",payload);
+    return payload;
+  })
+  )
+  return populatedPost;
+}
+  catch(err){
+    console.error('Error while fetching posts: ',err);
+  }
+}
 module.exports = mongoose.model('Post', postSchema);

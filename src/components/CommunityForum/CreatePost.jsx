@@ -1,10 +1,23 @@
 import { useState, useRef, useContext } from 'react';
 import { UserContext } from '../Context/userContext.js';
-import styled from 'styled-components';
+import styled,{keyframes} from 'styled-components';
 import PropTypes from 'prop-types';
 import { FiUser, FiX } from 'react-icons/fi';
 import { createPost } from '../../utils/forum.js';
-import { Store as store } from 'react-notifications-component'
+import { Store as store } from 'react-notifications-component';
+
+const slideInFromRight = keyframes`
+  0% {
+    transform: scale(0.5);
+  }
+  50% {
+    transform: scale(0.8);
+  }
+  100% {
+    transform: scale(1);
+  }
+`;
+
 const Overlay = styled.div`
   position: fixed;
   z-index: 2;
@@ -12,11 +25,11 @@ const Overlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
+  // animation: 0.1s ease 0s ${slideInFromRight};
 `;
 
 const FormContainer = styled.div`
@@ -27,6 +40,7 @@ const FormContainer = styled.div`
   position: relative;
   width: 70%;
   border-radius: 20px;
+  animation: 0.08s ease 0s ${slideInFromRight};
 `;
 
 const FormHeader = styled.div`
@@ -166,9 +180,28 @@ const CreatePostForm = ({setCreatePost }) => {
 
   const handleImageUpload = () => {
     const files = Array.from(fileInputRef.current.files);
-    const imageUrls = files.map((file) => URL.createObjectURL(file));
-    setImages([...images, ...imageUrls]);
-    fileInputRef.current.value = ''; 
+    // Create a new array to store the image files
+  const imageData = [];
+
+  // Iterate over each file
+  files.forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      // Add the image data to the array
+      imageData.push(event.target.result);
+      // If all files have been processed, set the state with the new array of image data
+      if (imageData.length === files.length) {
+        setImages([...images, ...imageData]);
+      }
+    };
+    console.log('file: ',file);
+    // Read the file as a data URL (base64-encoded string)
+    reader.readAsDataURL(file);
+  });
+
+
+  // Clear the file input after processing
+  fileInputRef.current.value = '';
   };
 
   const handleRemoveImage = (index) => {
@@ -180,7 +213,6 @@ const CreatePostForm = ({setCreatePost }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const postData = {
-
       title,
       description,
       images,
